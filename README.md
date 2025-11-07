@@ -6,7 +6,7 @@ This project implements time series forecasting models with advanced optimizatio
 
 ## Key Features
 
-- 🚀 **Multiple Model Architectures** - Support for TSMixer, Transformer, and custom base models
+- 🚀 **Multiple Model Architectures** - Support for Transformer and custom base models
 - 💡 **Advanced Optimization Strategies** - SAM and GSAM-FR optimization for improved generalization
 - 🔧 **Reversible Instance Normalization** - Handles distribution shifts between training and testing data
 - ⚡ **Flexible Configuration** - Configurable optimization strategies (0=Adam, 1=SAM, 2=GSAM-FR)
@@ -18,7 +18,6 @@ This project implements time series forecasting models with advanced optimizatio
 GSAM-reg-main--/
 ├── models/           # Model definitions
 │   ├── base_model.py     # Base model class
-│   ├── tsmixer_rev_in.py # TSMixer model implementation
 │   └── utils/           # Model utility modules
 ├── utils/            # Utility modules
 │   ├── callbacks.py      # Training callback functions
@@ -51,13 +50,13 @@ pip install -r requirements.txt
 
 ```bash
 # Run with default parameters
-python run.py --model tsmixer --data ETTh1 --seq_len 96 --pred_len 96
+python run.py --model transformer --data ETTh1 --seq_len 96 --pred_len 96
 
 # Enable SAM optimization
-python run.py --model tsmixer --data ETTh1 --opt_strategy 1 --rho 0.7
+python run.py --model transformer --data ETTh1 --opt_strategy 1 --rho 0.7
 
 # Enable GSAM-FR optimization
-python run.py --model tsmixer --data ETTh1 --opt_strategy 2 --rho 0.7 --alpha 0.5 --lambda_reg 0.1
+python run.py --model transformer --data ETTh1 --opt_strategy 2 --rho 0.7 --alpha 0.5 --lambda_reg 0.1
 ```
 
 ### Batch Experiments
@@ -66,10 +65,10 @@ Use the provided script to run multiple prediction lengths and configurations:
 
 ```bash
 # Run complete experiment pipeline
-sh run_script.sh -m tsmixer -d ETTh1 -a
+sh run_script.sh -m transformer -d ETTh1 -a
 
 # Parameter explanation
--m Model name (tsmixer, etc.)
+-m Model name (transformer, etc.)
 -d Dataset name (ETTh1, traffic, weather, etc.)
 -s Sequence length (default 96)
 -a Save additional results
@@ -78,7 +77,6 @@ sh run_script.sh -m tsmixer -d ETTh1 -a
 ## Supported Models and Datasets
 
 ### Models
-- TSMixer (default)
 - BaseModel (custom implementations)
 
 ### Datasets
@@ -126,17 +124,7 @@ Modify parameter configurations in `run.py` or `run_script.sh`, or adjust direct
 ## License
 
 This project is released under the MIT License.
-
-Copyright 2024 Romain Ilbert  
 Copyright 2025 Baofeng Liao
-
-## Acknowledgments
-
-This project builds upon the following excellent works:
-- [SAMformer Paper](https://arxiv.org/pdf/2402.10198)
-- [SAM Optimization Algorithm](https://github.com/google-research/sam)
-- [TSMixer Model](https://github.com/google-research/google-research/tree/master/tsmixer)
-- [RevIN Normalization](https://github.com/ts-kim/RevIN)
 
 ## Contact
 

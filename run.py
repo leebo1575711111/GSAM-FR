@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2024 Romain Ilbert
+# Copyright (c) 2025 Baofeng Liao
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Train models for Time Series Forecasting.")
 
     parser.add_argument("--model", type=str, default="transformer",
-                        choices=["tsmixer", "iTransformer", "transformer", "transformer_random", "spectrans", "linear"],
+                        choices=["transformer", "linear"],
                         help="Model to train.")
 
     parser.add_argument("--opt_strategy", type=int, default="2",

@@ -22,5 +22,4 @@
 # SOFTWARE.
 
 
-from .tsmixer_rev_in import TSMixerModel
 from .base_model import BaseModel

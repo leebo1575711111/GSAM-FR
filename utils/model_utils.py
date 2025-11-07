@@ -28,7 +28,7 @@ import sys
 import tensorflow as tf
 from tqdm import tqdm
 
-from models import BaseModel, TSMixerModel
+from models import BaseModel
 
 
 def power_iteration(model, inputs, targets, num_iterations=50, seed=42):
@@ -120,12 +120,8 @@ def initialize_model(args, n_features):
                         specifications provided in `args`.
     """
     model_kwargs = {
-        'model_input_shape': (args.seq_len, n_features),
         'pred_len': args.pred_len,  # Specify the prediction length for the model output.
-        'norm_type': args.norm_type,  # Choose the type of normalization (Layer or Batch normalization).
-        'activation': args.activation,  # Set the activation function for neural network layers.
-        'dropout': args.dropout,  # Determine the dropout rate for regularization.
-        'use_attention': use_attention,  # 确保正确传递此参数
+        'use_attention': use_attention, 
         'rho': args.rho,  # Specify the rho parameter for Sharpness-Aware Minimization (SAM), if applicable.
         # 'seed': args.seed,  # Set random seed for reproducibility
         'alpha': args.alpha,
@@ -135,17 +131,10 @@ def initialize_model(args, n_features):
     # Conditionally disable reversible instance normalization (RevIn) based on dataset type or additional results logging.
     use_revin = not (args.data == 'toy' or args.add_results)
 
-    if args.model == 'tsmixer':
-        # Initialize TSMixer model
-        # Remove unsupported parameters from model_kwargs for TSMixerModel
-        tsmixer_kwargs = model_kwargs.copy()
-        tsmixer_kwargs.pop('use_attention', None)
-        tsmixer_kwargs.pop('alpha', None)
-        tsmixer_kwargs.pop('lambda_reg', None)
-        model = TSMixerModel(**tsmixer_kwargs, n_blocks=args.n_block, ff_dim=args.ff_dim, opt_strategy=args.opt_strategy)
-    elif args.model == 'linear':
+    if args.model == 'linear':
         # Initialize a baseline linear model, projecting inputs directly to outputs without attention mechanisms.
-        model = BaseModel(**model_kwargs, use_attention=False, opt_strategy=args.opt_strategy)
+        model_kwargs['use_attention'] = False
+        model = BaseModel(**model_kwargs, opt_strategy=args.opt_strategy)
     elif args.model in ['transformer', 'transformer_random', 'spectrans']:
         model_kwargs = {
             'pred_len': args.pred_len,
@@ -202,16 +191,13 @@ def log_model_info(model, args):
     logging.info(f"alpha: {args.alpha}")
     logging.info(f"lambda_reg: {args.lambda_reg}")
     logging.info(f"learning_rate: {args.learning_rate}")
-    if args.model == 'tsmixer':
-        logging.info(f"Reversible instance normalization (RevIn): {'Enabled'}")
-    else:
-        # Enhanced attribute checking and logging
-        if hasattr(model, 'use_revin'):
-            logging.info(f"Reversible instance normalization (RevIn): {'Enabled' if model.use_revin else 'Disabled'}")
-        if hasattr(model, 'spec'):
-            logging.info(f"Spectral reparametrization (spec): {'Enabled' if model.spec else 'Disabled'}")
-        if hasattr(model, 'trainable'):
-            logging.info(f"Attention trainability (trainable): {'Enabled' if model.trainable else 'Disabled'}")
+    # Enhanced attribute checking and logging
+    if hasattr(model, 'use_revin'):
+        logging.info(f"Reversible instance normalization (RevIn): {'Enabled' if model.use_revin else 'Disabled'}")
+    if hasattr(model, 'spec'):
+        logging.info(f"Spectral reparametrization (spec): {'Enabled' if model.spec else 'Disabled'}")
+    if hasattr(model, 'trainable'):
+        logging.info(f"Attention trainability (trainable): {'Enabled' if model.trainable else 'Disabled'}")
 
     if args.opt_strategy == 0:
         logging.info("Optimizer: Adam")

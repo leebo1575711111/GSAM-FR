@@ -142,8 +142,6 @@ def setup_callbacks(args, checkpoint_path, model):
 
         callbacks = [checkpoint_callback, lr_schedule_callback, capture_weights_callback, early_stop_callback]
         
-        if args.model == 'tsmixer':
-            callbacks = [checkpoint_callback, lr_schedule_callback, early_stop_callback]
         return callbacks, capture_weights_callback
     except Exception as e:
         logging.error(f"Error setting up callbacks: {e}")
