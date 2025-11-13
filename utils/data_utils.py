@@ -62,54 +62,10 @@ class TSFDataLoader:
 
     def _read_data(self):
         """Load raw data and split datasets."""
-        if self.data in ["PEMS03", "PEMS04", "PEMS07", "PEMS08"]:  # 明确列出PEMS数据集
+        if self.data in ["PEMS03", "PEMS04", "PEMS07", "PEMS08"]: 
             self._read_pems_data()
         else:  # Handle CSV datasets (ETT, etc.)
             self._read_csv_data()
-
-    def _read_pems_data(self):
-        """Special handling for PEMS .npz format data."""
-        """加载PEMS的.npz文件"""
-        # 直接加载本地文件（假设文件存放在 DATA_DIR 下）
-        data_file = os.path.join(LOCAL_CACHE_DIR, f"{self.data}.npz")  # 明确添加.npz后缀
-        if not os.path.exists(data_file):
-            raise FileNotFoundError(f"PEMS dataset not found at {data_file}")
-
-        data = np.load(data_file, allow_pickle=True)
-        data = data['data'][:, :, 0]  # 取第一个特征（可调整）
-
-        # 后续处理与之前相同...
-        n = len(data)
-        train_end = int(n * 0.6)
-        val_end = train_end + int(n * 0.2)
-
-        # Split data (6:2:2 ratio as common in PEMS datasets)
-        n = len(data)
-        train_end = int(n * 0.6)
-        val_end = train_end + int(n * 0.2)
-
-        # Prepare dataframes (PEMS doesn't have dates, so we use integer index)
-        train_df = pd.DataFrame(data[:train_end])
-        val_df = pd.DataFrame(data[train_end:val_end])
-        test_df = pd.DataFrame(data[val_end:])
-
-        # Standardize
-        self.scaler = StandardScaler()
-        self.scaler.fit(train_df.values)
-
-        self.train_df = pd.DataFrame(
-            self.scaler.transform(train_df.values),
-            index=train_df.index
-        )
-        self.val_df = pd.DataFrame(
-            self.scaler.transform(val_df.values),
-            index=val_df.index
-        )
-        self.test_df = pd.DataFrame(
-            self.scaler.transform(test_df.values),
-            index=test_df.index
-        )
-        self.n_feature = self.train_df.shape[-1]
 
     def _read_csv_data(self):
         """Original CSV data handling for ETT datasets."""
